@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Dark Portfolio</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: "Manrope", sans-serif;
+      background: #09090b;
+      color: #f4f4f5;
+      overflow: hidden;
+    }
+
+    .app-shell {
+      height: 100%;
+      width: 100%;
+      overflow: auto;
+      position: relative;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(34,197,94,0.12), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(59,130,246,0.12), transparent 24%),
+        radial-gradient(circle at 50% 75%, rgba(168,85,247,0.10), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+        #09090b;
+    }
+
+    .grid-noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at center, black 35%, transparent 90%);
+    }
+
+    .glow-line {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      opacity: 0.35;
+      transform: translateX(-100%);
+      animation: sweep 8s linear infinite;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      animation: rise 0.85s ease forwards;
+    }
+
+    .reveal.delay-1 { animation-delay: 0.12s; }
+    .reveal.delay-2 { animation-delay: 0.24s; }
+    .reveal.delay-3 { animation-delay: 0.36s; }
+    .reveal.delay-4 { animation-delay: 0.48s; }
+    .reveal.delay-5 { animation-delay: 0.6s; }
+
+    .glass {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .chip:hover,
+    .project-card:hover,
+    .contact-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(28px);
+      opacity: 0.32;
+      animation: drift 8s ease-in-out infinite;
+    }
+
+    .orb.orb-2 { animation-delay: -3s; }
+    .orb.orb-3 { animation-delay: -5s; }
+
+    .hero-ring {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 0 40px rgba(255,255,255,0.06),
+        inset 0 0 24px rgba(255,255,255,0.05);
+    }
+
+    @keyframes rise {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(16px, -18px) scale(1.08); }
+    }
+
+    @keyframes sweep {
+      to {
+        transform: translateX(100%);
+      }
+    }
+
+    .scrollbar-soft::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 9999px;
+    }
+
+    .scrollbar-soft::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body>
+  <div id="app" class="app-shell w-full h-full overflow-auto scrollbar-soft">
+   <div class="grid-noise"></div>
+   <header class="relative z-10 px-6 md:px-10 pt-6">
+    <div id="navCard" class="glass mx-auto max-w-6xl rounded-full border border-white/10 bg-white/5 px-5 py-3">
+     <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+       <div id="logoBadge" class="h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold bg-white/10 border border-white/10">
+        PG
+       </div>
+       <div>
+        <p id="navName" class="text-sm font-semibold tracking-[0.22em] uppercase text-white/90">Parv Gangrade</p>
+        <p class="text-xs text-white/50">B.Tech CS/IT • Sage University Indore</p>
+       </div>
+      </div>
+      <div class="hidden md:flex items-center gap-3 text-sm text-white/70"><span class="rounded-full border border-white/10 px-3 py-1">HTML</span> <span class="rounded-full border border-white/10 px-3 py-1">CSS</span> <span class="rounded-full border border-white/10 px-3 py-1">JavaScript</span>
+      </div>
+     </div>
+    </div>
+   </header>
+   <main class="relative z-10 w-full px-6 md:px-10 pb-10">
+    <section class="mx-auto max-w-6xl pt-8 md:pt-12">
+     <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-stretch">
+      <div class="reveal delay-1 relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-7 md:p-10 glass">
+       <div class="glow-line"></div>
+       <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.28em] text-white/70"><span class="h-2 w-2 rounded-full bg-emerald-400"></span> Available for opportunities
+       </div>
+       <h1 id="heroName" class="font-black leading-none text-4xl sm:text-5xl md:text-6xl tracking-tight text-white" style="font-family:'Sora', sans-serif;">Parv Gangrade</h1>
+       <p id="heroTitle" class="mt-4 max-w-2xl text-lg md:text-2xl font-semibold text-white/85" style="font-family:'Sora', sans-serif;">B.Tech CS/IT Student crafting clean, responsive front-end experiences</p>
+       <p id="heroBio" class="mt-5 max-w-2xl text-sm md:text-base leading-7 text-white/65">I’m currently pursuing my degree at Sage University Indore and building modern web interfaces with HTML, CSS, and JavaScript. I enjoy turning ideas into polished, interactive digital experiences that feel fast, smart, and recruiter-ready.</p>
+       <div class="mt-8 flex flex-wrap gap-3"><button id="primaryButton" class="group inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"> <i data-lucide="sparkles" class="h-4 w-4"></i> View Profile </button> <button id="secondaryButton" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-3 font-semibold text-white transition duration-300 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"> <i data-lucide="mail" class="h-4 w-4"></i> Contact Me </button>
+       </div>
+       <div class="mt-10 grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+         <p class="text-xs uppercase tracking-[0.2em] text-white/45">Focus</p>
+         <p class="mt-2 text-lg font-bold text-white">Frontend UI</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+         <p class="text-xs uppercase tracking-[0.2em] text-white/45">Stack</p>
+         <p class="mt-2 text-lg font-bold text-white">HTML • CSS • JS</p>
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+         <p class="text-xs uppercase tracking-[0.2em] text-white/45">Based In</p>
+         <p class="mt-2 text-lg font-bold text-white">Indore, India</p>
+        </div>
+       </div>
+      </div>
+      <div class="reveal delay-2 relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.04] p-7 md:p-8 glass">
+       <div class="absolute inset-0 pointer-events-none">
+        <div id="orbOne" class="orb left-[12%] top-[14%] h-24 w-24"></div>
+        <div id="orbTwo" class="orb orb-2 right-[10%] top-[20%] h-20 w-20"></div>
+        <div id="orbThree" class="orb orb-3 left-[34%] bottom-[15%] h-28 w-28"></div>
+       </div>
+       <div class="relative flex h-full flex-col justify-between">
+        <div class="mx-auto mt-2 flex h-52 w-52 items-center justify-center rounded-full hero-ring bg-black/30">
+         <div id="profileRing" class="flex h-40 w-40 items-center justify-center rounded-full border border-white/10 bg-white/5 text-center">
+          <div>
+           <p class="text-5xl font-black text-white" style="font-family:'Sora', sans-serif;">PG</p>
+           <p class="mt-2 text-xs uppercase tracking-[0.3em] text-white/50">Portfolio</p>
+          </div>
+         </div>
+        </div>
+        <div class="mt-8 space-y-4">
+         <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div class="flex items-center gap-3">
+           <div class="rounded-xl bg-white/10 p-2">
+            <i data-lucide="graduation-cap" class="h-5 w-5 text-white"></i>
+           </div>
+           <div>
+            <p class="text-sm font-semibold text-white">Education</p>
+            <p class="text-sm text-white/60">Sage University Indore</p>
+           </div>
+          </div>
+         </div>
+         <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div class="flex items-center gap-3">
+           <div class="rounded-xl bg-white/10 p-2">
+            <i data-lucide="code-2" class="h-5 w-5 text-white"></i>
+           </div>
+           <div>
+            <p class="text-sm font-semibold text-white">Core Skills</p>
+            <p class="text-sm text-white/60">HTML, CSS, JavaScript</p>
+           </div>
+          </div>
+         </div>
+         <div class="rounded-2xl border border-white/10 bg-black/20 p-4">
+          <div class="flex items-center gap-3">
+           <div class="rounded-xl bg-white/10 p-2">
+            <i data-lucide="rocket" class="h-5 w-5 text-white"></i>
+           </div>
+           <div>
+            <p class="text-sm font-semibold text-white">Goal</p>
+            <p class="text-sm text-white/60">Create impactful recruiter-facing work</p>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section>
+    <section class="mx-auto max-w-6xl pt-8 md:pt-10">
+     <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+      <div class="reveal delay-3 rounded-[28px] border border-white/10 bg-white/[0.04] p-7 md:p-8 glass">
+       <div class="mb-6 flex items-center justify-between">
+        <h2 id="skillsTitle" class="text-2xl font-bold text-white" style="font-family:'Sora', sans-serif;">Skills &amp; Strengths</h2><i data-lucide="layers-3" class="h-5 w-5 text-white/50"></i>
+       </div>
+       <div class="flex flex-wrap gap-3"><button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Responsive Layouts</button> <button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Landing Pages</button> <button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Animations</button> <button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Clean UI</button> <button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Semantic HTML</button> <button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Modern CSS</button> <button class="chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/85 transition duration-300">Interactive JavaScript</button>
+       </div>
+       <div class="mt-8 space-y-4">
+        <div>
+         <div class="mb-2 flex items-center justify-between text-sm text-white/75"><span>HTML</span> <span>92%</span>
+         </div>
+         <div class="h-2 rounded-full bg-white/10 overflow-hidden">
+          <div id="barOne" class="h-full rounded-full transition-all duration-700" style="width:92%"></div>
+         </div>
+        </div>
+        <div>
+         <div class="mb-2 flex items-center justify-between text-sm text-white/75"><span>CSS</span> <span>88%</span>
+         </div>
+         <div class="h-2 rounded-full bg-white/10 overflow-hidden">
+          <div id="barTwo" class="h-full rounded-full transition-all duration-700" style="width:88%"></div>
+         </div>
+        </div>
+        <div>
+         <div class="mb-2 flex items-center justify-between text-sm text-white/75"><span>JavaScript</span> <span>80%</span>
+         </div>
+         <div class="h-2 rounded-full bg-white/10 overflow-hidden">
+          <div id="barThree" class="h-full rounded-full transition-all duration-700" style="width:80%"></div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="reveal delay-4 rounded-[28px] border border-white/10 bg-white/[0.04] p-7 md:p-8 glass">
+       <div class="mb-6 flex items-center justify-between">
+        <h2 id="projectsTitle" class="text-2xl font-bold text-white" style="font-family:'Sora', sans-serif;">Project Highlights</h2><i data-lucide="folder-kanban" class="h-5 w-5 text-white/50"></i>
+       </div>
+       <div class="grid gap-4"><button class="project-card text-left rounded-2xl border border-white/10 bg-black/20 p-5 transition duration-300 focus:outline-none focus:ring-2 focus:ring-white/40">
+         <div class="flex items-start justify-between gap-4">
+          <div>
+           <p class="text-lg font-bold text-white">Personal Portfolio Website</p>
+           <p class="mt-2 text-sm leading-6 text-white/60">A modern personal site with animated sections, smooth layout flow, and responsive presentation for recruiters.</p>
+          </div><i data-lucide="arrow-up-right" class="h-5 w-5 text-white/45"></i>
+         </div></button> <button class="project-card text-left rounded-2xl border border-white/10 bg-black/20 p-5 transition duration-300 focus:outline-none focus:ring-2 focus:ring-white/40">
+         <div class="flex items-start justify-between gap-4">
+          <div>
+           <p class="text-lg font-bold text-white">Landing Page Design</p>
+           <p class="mt-2 text-sm leading-6 text-white/60">An engaging landing page concept focused on contrast, readability, and stronger call-to-action sections.</p>
+          </div><i data-lucide="arrow-up-right" class="h-5 w-5 text-white/45"></i>
+         </div></button> <button class="project-card text-left rounded-2xl border border-white/10 bg-black/20 p-5 transition duration-300 focus:outline-none focus:ring-2 focus:ring-white/40">
+         <div class="flex items-start justify-between gap-4">
+          <div>
+           <p class="text-lg font-bold text-white">JavaScript UI Interaction Demo</p>
+           <p class="mt-2 text-sm leading-6 text-white/60">A small interface demo showing dynamic behaviour, user interaction, and polished micro-animations.</p>
+          </div><i data-lucide="arrow-up-right" class="h-5 w-5 text-white/45"></i>
+         </div></button>
+       </div>
+      </div>
+     </div>
+    </section>
+    <section class="mx-auto max-w-6xl pt-8 md:pt-10">
+     <div class="reveal delay-5 contact-card rounded-[28px] border border-white/10 bg-white/[0.04] p-7 md:p-8 glass transition duration-300">
+      <div class="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
+       <div>
+        <h2 id="contactTitle" class="text-2xl md:text-3xl font-bold text-white" style="font-family:'Sora', sans-serif;">Let’s build something impressive</h2>
+        <p id="contactText" class="mt-3 max-w-2xl text-sm md:text-base leading-7 text-white/65">I’m open to internships, freelance work, and creative front-end opportunities where I can contribute and grow.</p>
+       </div>
+       <div class="flex flex-wrap gap-3"><button id="contactButton" class="inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"> <i data-lucide="send" class="h-4 w-4"></i> Say Hello </button>
+       </div>
+      </div>
+      <div id="messageBox" class="mt-5 hidden rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white/80">
+       Thanks for checking out this portfolio. You can customize the text and style further from the Canva edit controls.
+      </div>
+     </div>
+    </section>
+   </main>
+  </div>
+  <script>
+    const defaultConfig = {
+      background_color: "#09090b",
+      surface_color: "#121218",
+      text_color: "#f4f4f5",
+      primary_action_color: "#8bffb0",
+      secondary_action_color: "#60a5fa",
+      font_family: "Sora",
+      font_size: 16,
+      hero_name: "Parv Gangrade",
+      hero_title: "B.Tech CS/IT Student crafting clean, responsive front-end experiences",
+      hero_bio: "I’m currently pursuing my degree at Sage University Indore and building modern web interfaces with HTML, CSS, and JavaScript. I enjoy turning ideas into polished, interactive digital experiences that feel fast, smart, and recruiter-ready.",
+      skills_title: "Skills & Strengths",
+      projects_title: "Project Highlights",
+      contact_title: "Let’s build something impressive",
+      contact_text: "I’m open to internships, freelance work, and creative front-end opportunities where I can contribute and grow."
+    };
+
+    const els = {};
+
+    function cacheElements() {
+      els.app = document.getElementById("app");
+      els.navCard = document.getElementById("navCard");
+      els.logoBadge = document.getElementById("logoBadge");
+      els.navName = document.getElementById("navName");
+      els.heroName = document.getElementById("heroName");
+      els.heroTitle = document.getElementById("heroTitle");
+      els.heroBio = document.getElementById("heroBio");
+      els.skillsTitle = document.getElementById("skillsTitle");
+      els.projectsTitle = document.getElementById("projectsTitle");
+      els.contactTitle = document.getElementById("contactTitle");
+      els.contactText = document.getElementById("contactText");
+      els.primaryButton = document.getElementById("primaryButton");
+      els.secondaryButton = document.getElementById("secondaryButton");
+      els.contactButton = document.getElementById("contactButton");
+      els.messageBox = document.getElementById("messageBox");
+      els.profileRing = document.getElementById("profileRing");
+      els.orbOne = document.getElementById("orbOne");
+      els.orbTwo = document.getElementById("orbTwo");
+      els.orbThree = document.getElementById("orbThree");
+      els.barOne = document.getElementById("barOne");
+      els.barTwo = document.getElementById("barTwo");
+      els.barThree = document.getElementById("barThree");
+    }
+
+    function applyConfig(config) {
+      const merged = { ...defaultConfig, ...config };
+      const baseFont = merged.font_family || defaultConfig.font_family;
+      const baseSize = merged.font_size || defaultConfig.font_size;
+
+      document.body.style.backgroundColor = merged.background_color;
+      els.app.style.background = `
+        radial-gradient(circle at 15% 20%, ${hexToRgba(merged.primary_action_color, 0.12)}, transparent 28%),
+        radial-gradient(circle at 85% 15%, ${hexToRgba(merged.secondary_action_color, 0.12)}, transparent 24%),
+        radial-gradient(circle at 50% 75%, ${hexToRgba(merged.primary_action_color, 0.10)}, transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)),
+        ${merged.background_color}
+      `;
+
+      els.navCard.style.backgroundColor = hexToRgba(merged.surface_color, 0.45);
+      els.navCard.style.borderColor = hexToRgba(merged.text_color, 0.12);
+      els.logoBadge.style.backgroundColor = hexToRgba(merged.text_color, 0.08);
+      els.logoBadge.style.borderColor = hexToRgba(merged.text_color, 0.12);
+      els.logoBadge.style.color = merged.text_color;
+
+      els.navName.textContent = merged.hero_name;
+      els.navName.style.color = merged.text_color;
+
+      els.heroName.textContent = merged.hero_name;
+      els.heroTitle.textContent = merged.hero_title;
+      els.heroBio.textContent = merged.hero_bio;
+      els.skillsTitle.textContent = merged.skills_title;
+      els.projectsTitle.textContent = merged.projects_title;
+      els.contactTitle.textContent = merged.contact_title;
+      els.contactText.textContent = merged.contact_text;
+
+      [els.heroName, els.heroTitle, els.skillsTitle, els.projectsTitle, els.contactTitle].forEach(el => {
+        el.style.fontFamily = `${baseFont}, "Sora", sans-serif`;
+        el.style.color = merged.text_color;
+      });
+
+      [els.heroBio, els.contactText, els.navName].forEach(el => {
+        el.style.fontFamily = `${baseFont}, "Manrope", sans-serif`;
+      });
+
+      els.heroName.style.fontSize = `${baseSize * 3.2}px`;
+      els.heroTitle.style.fontSize = `${baseSize * 1.35}px`;
+      els.heroBio.style.fontSize = `${baseSize}px`;
+      els.skillsTitle.style.fontSize = `${baseSize * 1.5}px`;
+      els.projectsTitle.style.fontSize = `${baseSize * 1.5}px`;
+      els.contactTitle.style.fontSize = `${baseSize * 1.8}px`;
+      els.contactText.style.fontSize = `${baseSize}px`;
+
+      [els.heroBio, els.contactText].forEach(el => {
+        el.style.color = hexToRgba(merged.text_color, 0.68);
+      });
+
+      els.primaryButton.style.backgroundColor = merged.primary_action_color;
+      els.primaryButton.style.color = merged.background_color;
+      els.contactButton.style.backgroundColor = merged.primary_action_color;
+      els.contactButton.style.color = merged.background_color;
+
+      els.secondaryButton.style.color = merged.text_color;
+      els.secondaryButton.style.borderColor = hexToRgba(merged.text_color, 0.16);
+      els.secondaryButton.style.backgroundColor = hexToRgba(merged.secondary_action_color, 0.10);
+
+      els.profileRing.style.backgroundColor = hexToRgba(merged.surface_color, 0.72);
+      els.profileRing.style.borderColor = hexToRgba(merged.text_color, 0.10);
+
+      els.orbOne.style.backgroundColor = hexToRgba(merged.primary_action_color, 0.65);
+      els.orbTwo.style.backgroundColor = hexToRgba(merged.secondary_action_color, 0.55);
+      els.orbThree.style.backgroundColor = hexToRgba(merged.text_color, 0.18);
+
+      els.barOne.style.backgroundColor = merged.primary_action_color;
+      els.barTwo.style.backgroundColor = merged.secondary_action_color;
+      els.barThree.style.backgroundColor = merged.primary_action_color;
+
+      document.querySelectorAll('.glass').forEach(card => {
+        card.style.backgroundColor = hexToRgba(merged.surface_color, 0.35);
+        card.style.borderColor = hexToRgba(merged.text_color, 0.10);
+      });
+
+      document.querySelectorAll('.project-card, .contact-card, .chip').forEach(item => {
+        item.style.borderColor = hexToRgba(merged.text_color, 0.10);
+      });
+
+      document.querySelectorAll('p, span, button, div').forEach(el => {
+        if (el.classList.contains('text-white')) {
+          el.style.color = merged.text_color;
+        }
+      });
+    }
+
+    function hexToRgba(hex, alpha) {
+      const clean = hex.replace('#', '');
+      const bigint = parseInt(clean.length === 3
+        ? clean.split('').map(ch => ch + ch).join('')
+        : clean, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function showMessage(text) {
+      els.messageBox.textContent = text;
+      els.messageBox.classList.remove('hidden');
+    }
+
+    function setupInteractions() {
+      els.primaryButton.addEventListener('click', function () {
+        showMessage("This portfolio highlights your strongest profile points for recruiters.");
+      });
+
+      els.secondaryButton.addEventListener('click', function () {
+        showMessage("Tip: Add your email, LinkedIn, and GitHub in the next version to make recruiter outreach easier.");
+      });
+
+      els.contactButton.addEventListener('click', function () {
+        showMessage("Nice choice — this section is ready for your contact details or resume link.");
+      });
+
+      document.querySelectorAll('.project-card').forEach((card, index) => {
+        card.addEventListener('click', function () {
+          const messages = [
+            "Project idea: show screenshots, your role, tools used, and the final result.",
+            "Project idea: highlight the problem, your design approach, and the visual outcome.",
+            "Project idea: explain the interaction you built and what users can do with it."
+          ];
+          showMessage(messages[index] || "You can expand this project card with more details.");
+        });
+      });
+    }
+
+    cacheElements();
+    setupInteractions();
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          applyConfig(config);
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => window.elementSdk.setConfig({ background_color: value })
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => window.elementSdk.setConfig({ surface_color: value })
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => window.elementSdk.setConfig({ text_color: value })
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => window.elementSdk.setConfig({ primary_action_color: value })
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => window.elementSdk.setConfig({ secondary_action_color: value })
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => window.elementSdk.setConfig({ font_family: value })
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => window.elementSdk.setConfig({ font_size: value })
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["hero_name", config.hero_name || defaultConfig.hero_name],
+          ["hero_title", config.hero_title || defaultConfig.hero_title],
+          ["hero_bio", config.hero_bio || defaultConfig.hero_bio],
+          ["skills_title", config.skills_title || defaultConfig.skills_title],
+          ["projects_title", config.projects_title || defaultConfig.projects_title],
+          ["contact_title", config.contact_title || defaultConfig.contact_title],
+          ["contact_text", config.contact_text || defaultConfig.contact_text]
+        ])
+      });
+      applyConfig(window.elementSdk.config || defaultConfig);
+    } else {
+      applyConfig(defaultConfig);
+    }
+
+    lucide.createIcons();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e1ea8d3370b2f6d',t:'MTc3NDQ0OTUwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
